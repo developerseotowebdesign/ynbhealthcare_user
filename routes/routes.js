@@ -1,14 +1,14 @@
 import express from "express";
 import {
-    SignupAdmin, Adminlogin, getAllGalleryController, deleteGalleryController, AddAdminBlogController, AdmindeleteBlogController, AddAdminCategoryController
-    , getAllReviewsAdmin, AdmingetAllCategories, AddAdminProduct, getAllcategoryFillAdmin, updateCategoryAdmin, getCategoryIdAdmin, deleteCategoryAdmin, getAllProductFillAdmin, updateProductAdmin, getProductIdAdmin, deleteProductAdmin,
-    AddAdminPromoController, getAllPromoAdmin, updatePromoAdmin, getPromoIdAdmin, deletePromoAdmin
-    , ChangePassAdmin, ForgotAdminPassword, editOrderAdmin, deleteOrderAdmin, AddAdminPageController, getAllPageAdmin, updatePageAdmin, getPageIdAdmin, deletePageAdmin, getAllBlogAdmin, exportAllProAdmin, importAllProAdmin, getAllUserAdmin, AddAdminTaxController, getAllTaxAdmin, updateTaxAdmin, getTaxIdAdmin, deleteTaxAdmin, ViewAllAdminZones, AddAdminZonesController, getAllZonesAdmin, updateZonesAdmin, getZonesIdAdmin, deleteZonesAdmin, GetImageAdmin, deleteFolderAdmin, UpdateFolderAdmin, getUserIdAdmin, GetFolderIDAdmin, AddAdminFolderController, GetFolderAdmin, editUserAdmin, AddAdminAttributeController, deleteRatingAdmin, editReviewAdmin, getAllOrderAdmin, getAllAttributeFillAdmin, updateAttributeAdmin, getAttributeIdAdmin, deleteAttributeAdmin, getAllAttribute, AddAdminTagController, getAllTagFillAdmin, updateTagAdmin, getTagIdAdmin, deleteTagAdmin, getAllTag, editHomeData, editHomeLayoutData,
+  SignupAdmin, Adminlogin, getAllGalleryController, deleteGalleryController, AddAdminBlogController, AdmindeleteBlogController, AddAdminCategoryController
+  , getAllReviewsAdmin, AdmingetAllCategories, AddAdminProduct, getAllcategoryFillAdmin, updateCategoryAdmin, getCategoryIdAdmin, deleteCategoryAdmin, getAllProductFillAdmin, updateProductAdmin, getProductIdAdmin, deleteProductAdmin,
+  AddAdminPromoController, getAllPromoAdmin, updatePromoAdmin, getPromoIdAdmin, deletePromoAdmin
+  , ChangePassAdmin, ForgotAdminPassword, editOrderAdmin, deleteOrderAdmin, AddAdminPageController, getAllPageAdmin, updatePageAdmin, getPageIdAdmin, deletePageAdmin, getAllBlogAdmin, exportAllProAdmin, importAllProAdmin, getAllUserAdmin, AddAdminTaxController, getAllTaxAdmin, updateTaxAdmin, getTaxIdAdmin, deleteTaxAdmin, ViewAllAdminZones, AddAdminZonesController, getAllZonesAdmin, updateZonesAdmin, getZonesIdAdmin, deleteZonesAdmin, GetImageAdmin, deleteFolderAdmin, UpdateFolderAdmin, getUserIdAdmin, GetFolderIDAdmin, AddAdminFolderController, GetFolderAdmin, editUserAdmin, AddAdminAttributeController, deleteRatingAdmin, editReviewAdmin, getAllOrderAdmin, getAllAttributeFillAdmin, updateAttributeAdmin, getAttributeIdAdmin, deleteAttributeAdmin, getAllAttribute, AddAdminTagController, getAllTagFillAdmin, updateTagAdmin, getTagIdAdmin, deleteTagAdmin, getAllTag, editHomeData, editHomeLayoutData,
 } from "../controller/adminController.js";
 import {
-    AddCart, contactEnquire, razorpayCallback, UpdateCart, getCart, userTokenController, userBlogsController, Userlogin, SignupUser, getAllBlogsController, createBlogController,
-    LoginAndVerifyOTP,updateBlogController, deleteBlogController, getBlogIdController, CreateChatController, findUserschatController, findchatController
- ,EmailVerify, postman ,PaymentResponse  ,PaymentRequest, getProductsByFilterUser, cancelOrderUser, ViewAllZones, getProductsByHSN, AuthUserByID, updateProfileUser, SignupNewUser, LoginUserWithOTP, LoginUserWithPass, SendOTP, SignupLoginUser, getTaxIdUser, ViewAllUserTaxes, ViewCompareByUser, applyPromoCode, getHomeLayoutData, AddWishListByUser, deleteCompareByUser, deleteWishListByUser, ViewWishListByUser, AddCompareByUser, ViewProductRating, ViewCategoryRating, AddRating, UsergetAllCategories, UsergetAllProducts, UsergetAllHomeProducts, userOrdersViewController, getAllAttributeUser, getProductIdUser, updateUserController, createOrderController, updateUserAndCreateOrderController, userOrdersController, getHomeData, GetAllCategoriesByParentIdController
+  AddCart, contactEnquire, razorpayCallback, UpdateCart, getCart, userTokenController, userBlogsController, Userlogin, SignupUser, getAllBlogsController, createBlogController,
+  LoginAndVerifyOTP, updateBlogController, deleteBlogController, getBlogIdController, CreateChatController, findUserschatController, findchatController
+  , EmailVerify, postman, PaymentResponse, PaymentRequest, getProductsByFilterUser, cancelOrderUser, ViewAllZones, getProductsByHSN, AuthUserByID, updateProfileUser, SignupNewUser, LoginUserWithOTP, LoginUserWithPass, SendOTP, SignupLoginUser, getTaxIdUser, ViewAllUserTaxes, ViewCompareByUser, applyPromoCode, getHomeLayoutData, AddWishListByUser, deleteCompareByUser, deleteWishListByUser, ViewWishListByUser, AddCompareByUser, ViewProductRating, ViewCategoryRating, AddRating, UsergetAllCategories, UsergetAllProducts, UsergetAllHomeProducts, userOrdersViewController, getAllAttributeUser, getProductIdUser, updateUserController, createOrderController, updateUserAndCreateOrderController, userOrdersController, getHomeData, GetAllCategoriesByParentIdController
 } from "../controller/userController.js"
 import authenticateToken from "../middleware/authMiddleware.js";
 import { uploadImage, handleImageUpload } from "../controller/adminController.js";
@@ -145,30 +145,30 @@ router.post('/admin/import/allproducts/', importAllProAdmin);
 
 // Middleware function to check if the request is coming from an authorized domain
 function checkOrigin(req, res, next) {
-    const allowedOrigins = ['http://localhost:3000']; // Add your authorized domains here
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        next();
-    } else {
-      next();
-        // res.status(403).json({ error: 'Unauthorized domain' });
-    }
+  const allowedOrigins = ['http://localhost:3001']; // Add your authorized domains here
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    next();
+  } else {
+    next();
+    // res.status(403).json({ error: 'Unauthorized domain' });
   }
+}
 
 
 
-router.post('/signup',checkOrigin, SignupUser);
-router.post('/login',checkOrigin, Userlogin);
+router.post('/signup', checkOrigin, SignupUser);
+router.post('/login', checkOrigin, Userlogin);
 
 //router.post('/create-order', createOrderController);
-router.post('/create-order/:id',checkOrigin, updateUserAndCreateOrderController);
+router.post('/create-order/:id', checkOrigin, updateUserAndCreateOrderController);
 router.post('/razorpayCallback', razorpayCallback);
 
 router.put('/cancel-order/:id', cancelOrderUser);
 
-router.get('/user-orders/:id',checkOrigin, userOrdersController);
-router.get('/user-orders-view/:userId/:orderId',checkOrigin, userOrdersViewController);
+router.get('/user-orders/:id', checkOrigin, userOrdersController);
+router.get('/user-orders-view/:userId/:orderId', checkOrigin, userOrdersViewController);
 
 router.post('/payment-request', PaymentRequest);
 router.post('/payment-response', PaymentResponse);
@@ -206,54 +206,54 @@ router.get('/validatetoken/:id', checkOrigin, userTokenController);
 
 router.get('/user-blogs/:id', checkOrigin, userBlogsController);
 
-router.get('/user-product/:id',checkOrigin, getProductIdUser);
-router.get('/all-attribute',checkOrigin, getAllAttributeUser);
+router.get('/user-product/:id', checkOrigin, getProductIdUser);
+router.get('/all-attribute', checkOrigin, getAllAttributeUser);
 
 // home settings user
-router.get('/home-data', checkOrigin,getHomeData);
+router.get('/home-data', checkOrigin, getHomeData);
 
-router.get('/home-layout-data',checkOrigin, getHomeLayoutData);
+router.get('/home-layout-data', checkOrigin, getHomeLayoutData);
 
-router.post('/add-rating',checkOrigin,  AddRating);
+router.post('/add-rating', checkOrigin, AddRating);
 
 router.get('/view-product-rating/:id', checkOrigin, ViewProductRating);
 
 router.get('/all-rating/', checkOrigin, ViewCategoryRating);
 
-router.post('/add-wishlist', checkOrigin,  AddWishListByUser);
+router.post('/add-wishlist', checkOrigin, AddWishListByUser);
 
 router.post('/add-compare', checkOrigin, AddCompareByUser);
 
-router.delete('/delete-compare/:id',checkOrigin,  deleteCompareByUser);
+router.delete('/delete-compare/:id', checkOrigin, deleteCompareByUser);
 
 router.get('/view-wishlist/:id', checkOrigin, ViewWishListByUser);
 
-router.get('/view-compare/:id',checkOrigin, ViewCompareByUser);
+router.get('/view-compare/:id', checkOrigin, ViewCompareByUser);
 
 
-router.delete('/delete-wishlist/:id',checkOrigin, deleteWishListByUser);
+router.delete('/delete-wishlist/:id', checkOrigin, deleteWishListByUser);
 
-router.post('/apply-promo',checkOrigin, applyPromoCode);
+router.post('/apply-promo', checkOrigin, applyPromoCode);
 
-router.get('/get-all-zones',checkOrigin, ViewAllZones);
-router.get('/get-all-taxes',checkOrigin, ViewAllUserTaxes);
-router.get('/get-tax/:id',checkOrigin,  getTaxIdUser);
+router.get('/get-all-zones', checkOrigin, ViewAllZones);
+router.get('/get-all-taxes', checkOrigin, ViewAllUserTaxes);
+router.get('/get-tax/:id', checkOrigin, getTaxIdUser);
 
-router.post('/send-otp/',  checkOrigin, SendOTP);
+router.post('/send-otp/', checkOrigin, SendOTP);
 
 router.post('/email-verify/', checkOrigin, EmailVerify);
 
 
-router.post('/signup-login-otp/',checkOrigin,  SignupLoginUser);
+router.post('/signup-login-otp/', checkOrigin, SignupLoginUser);
 
 router.post('/login-with-pass/', checkOrigin, LoginUserWithPass);
 
 router.post('/login-with-otp/', checkOrigin, LoginUserWithOTP);
 
-router.post('/signup-new-user/',checkOrigin, SignupNewUser);
+router.post('/signup-new-user/', checkOrigin, SignupNewUser);
 
-router.post('/auth-user/',checkOrigin, AuthUserByID);
-router.post('/contact-enquire/',checkOrigin, contactEnquire);
+router.post('/auth-user/', checkOrigin, AuthUserByID);
+router.post('/contact-enquire/', checkOrigin, contactEnquire);
 
 // for get product varient 
 
@@ -263,7 +263,7 @@ router.get('/products-variations-fillter/', checkOrigin, getProductsByFilterUser
 
 router.post('/login-verify-otp/', checkOrigin, LoginAndVerifyOTP);
 
-  
+
 
 export default router;
 
