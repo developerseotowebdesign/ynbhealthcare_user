@@ -145,7 +145,7 @@ router.post('/admin/import/allproducts/', importAllProAdmin);
 
 // Middleware function to check if the request is coming from an authorized domain
 function checkOrigin(req, res, next) {
-  const allowedOrigins = ['http://localhost:3001']; // Add your authorized domains here
+  const allowedOrigins = ['https://ynb.delhiexpert.com']; // Add your authorized domains here
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
