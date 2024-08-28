@@ -6,6 +6,12 @@ const categorySchema = new mongoose.Schema(
             type: String,
             require: [true, "title is required"],
         },
+        slide_head: {
+            type: String,
+        },
+        slide_para: {
+            type: String,
+        },
         image: {
             type: String,
         },

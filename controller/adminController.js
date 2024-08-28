@@ -34,6 +34,7 @@ import nodemailer from "nodemailer";
 import jwt from 'jsonwebtoken';
 import wishlistModel from "../models/wishlistModel.js";
 import compareModel from "../models/compareModel.js";
+import enquireModel from "../models/enquireModel.js";
 
 
 
@@ -509,6 +510,8 @@ export const AddAdminCategoryController = async (req, res) => {
       metaKeywords,
       parent,
       status,
+      slide_head,
+      slide_para,
     } = req.body;
 
     // Validation
@@ -522,6 +525,8 @@ export const AddAdminCategoryController = async (req, res) => {
     // Create a new category with the specified parent
     const newCategory = new categoryModel({
       title,
+      slide_head,
+      slide_para,
       image,
       slug,
       description,
@@ -779,6 +784,8 @@ export const updateCategoryAdmin = async (req, res) => {
 
     const {
       title,
+      slide_head,
+      slide_para,
       image,
       slug,
       description,
@@ -791,6 +798,8 @@ export const updateCategoryAdmin = async (req, res) => {
 
     let updateFields = {
       title,
+      slide_head,
+      slide_para,
       image,
       slug,
       description,
@@ -912,15 +921,20 @@ export const AddAdminProduct = async (req, res) => {
     }
 
     const lastProduct = await productModel.findOne().sort({ _id: -1 }).limit(1);
-    if (typeof lastProduct.p_id === 'string') {
-      lastProduct.p_id = parseFloat(lastProduct.p_id);
+
+    // Initialize p_id
+    let p_id;
+
+    // Check if a last product was found
+    if (!lastProduct) {
+      p_id = 0; // If no products are found, start with 0
+    } else {
+      // Convert p_id to a number if it's a string
+      const lastProductId = typeof lastProduct.p_id === 'string' ? parseFloat(lastProduct.p_id) : lastProduct.p_id;
+      p_id = lastProductId + 1; // Calculate the new p_id
     }
 
-    const lastProductId = lastProduct ? lastProduct.p_id : 0;
-
-    // Calculate the auto-increment ID
-    const p_id = lastProductId + 1;
-
+    console.log('p_idp_idp_id', p_id)
     // Create a new category with the specified parent
     const newProduct = new productModel({
       p_id,
@@ -1030,7 +1044,7 @@ export const updateProductAdmin = async (req, res) => {
       metaKeywords,
       Category,
       tag, features,
-      specifications, weight, gst, hsn, sku,  variant_products,type 
+      specifications, weight, gst, hsn, sku, variant_products, type
     } = req.body;
 
     console.log('typp', type);
@@ -1051,7 +1065,7 @@ export const updateProductAdmin = async (req, res) => {
       metaKeywords,
       Category,
       tag, features,
-      specifications, weight, gst, hsn, sku,variant_products,type 
+      specifications, weight, gst, hsn, sku, variant_products, type
     };
 
     const Product = await productModel.findByIdAndUpdate(id, updateFields, {
@@ -1681,6 +1695,57 @@ export const getAllReviewsAdmin = async (req, res) => {
   } catch (error) {
     return res.status(500).send({
       message: `Error while getting ratings: ${error}`,
+      success: false,
+      error,
+    });
+  }
+};
+
+// for Enquire 
+
+export const getAllEnquireAdmin = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page, default is 1
+    const limit = parseInt(req.query.limit) || 10; // Number of documents per page, default is 10
+    const searchTerm = req.query.search || ""; // Get search term from the query parameters
+
+    const skip = (page - 1) * limit;
+
+    const query = {};
+    if (searchTerm) {
+      // If search term is provided, add it to the query
+      query.$or = [
+        { userId: { $regex: searchTerm, $options: "i" } }, // Case-insensitive username search
+        { productId: { $regex: searchTerm, $options: "i" } }, // Case-insensitive email search
+      ];
+    }
+
+    const totalpage = await enquireModel.countDocuments(query); // Count documents matching the query
+
+    const Enquire = await enquireModel
+      .find(query)
+      .sort({ _id: -1 }) // Sort by _id in descending order
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    if (!Enquire || Enquire.length === 0) {
+      return res.status(200).send({
+        message: "No Enquire found",
+        success: false,
+      });
+    }
+    return res.status(200).send({
+      message: "All Enquire list",
+      ratingCount: Enquire.length,
+      currentPage: page,
+      totalPages: Math.ceil(totalpage / limit),
+      success: true,
+      Enquire,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: `Error while getting Enquire: ${error}`,
       success: false,
       error,
     });

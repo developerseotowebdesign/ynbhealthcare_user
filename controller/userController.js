@@ -26,6 +26,7 @@ import https from 'https';
 import CryptoJS from 'crypto-js'; // Import the crypto module
 import axios from 'axios';
 import { cpSync } from "fs";
+import enquireModel from "../models/enquireModel.js";
 
 
 dotenv.config();
@@ -74,9 +75,9 @@ function decryptURL(encryptedText, key) {
   const initVector = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
   const encryptedHex = CryptoJS.enc.Hex.parse(encryptedText);
   const decryptedText = CryptoJS.AES.decrypt(
-      { ciphertext: encryptedHex },
-      keyHex,
-      { iv: initVector, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.NoPadding }
+    { ciphertext: encryptedHex },
+    keyHex,
+    { iv: initVector, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.NoPadding }
   );
   return decryptedText.toString(CryptoJS.enc.Utf8);
 }
@@ -185,7 +186,7 @@ export const SignupUser = async (req, res) => {
 export const postman = async (req, res) => {
   const order_id = req.params.id; // Extracting order ID from params
   const merchantJsonData = {
-      order_no: order_id,
+    order_no: order_id,
   };
   const accessCode = process.env.ACCESS_CODE;
   const workingKey = process.env.WORKING_KEY;
@@ -193,70 +194,70 @@ export const postman = async (req, res) => {
   const encryptedData = encrypt(merchantData, workingKey);
 
   try {
-      const response = await axios.post(`https://apitest.ccavenue.com/apis/servlet/DoWebTrans?enc_request=${encryptedData}&access_code=${accessCode}&request_type=JSON&response_type=JSON&command=orderStatusTracker&version=1.2`);
+    const response = await axios.post(`https://apitest.ccavenue.com/apis/servlet/DoWebTrans?enc_request=${encryptedData}&access_code=${accessCode}&request_type=JSON&response_type=JSON&command=orderStatusTracker&version=1.2`);
 
-      const encResponse = response.data.split('&')[1].split('=')[1];
+    const encResponse = response.data.split('&')[1].split('=')[1];
 
-      const finalstatus =  encResponse.replace(/\s/g, '').toString();
-              console.log("`"+finalstatus+"`");
-      const newStatus = await decrypt(finalstatus, workingKey);
+    const finalstatus = encResponse.replace(/\s/g, '').toString();
+    console.log("`" + finalstatus + "`");
+    const newStatus = await decrypt(finalstatus, workingKey);
 
-     // Clean the string from unwanted characters
-     const cleanedData = cleanDataString(newStatus);
+    // Clean the string from unwanted characters
+    const cleanedData = cleanDataString(newStatus);
 
-     // Construct an object from the cleaned data string
-     const newData = constructObjectFromDataString(cleanedData);
+    // Construct an object from the cleaned data string
+    const newData = constructObjectFromDataString(cleanedData);
 
 
-     
-     let paymentStatus ;
-     let OrderStatus ;
 
-    if(newData.order_status === 'Awaited'){
+    let paymentStatus;
+    let OrderStatus;
+
+    if (newData.order_status === 'Awaited') {
       paymentStatus = 2;
       OrderStatus = "1"
-    } if(newData.order_status === 'Shipped'){
-    paymentStatus = 1;
-    OrderStatus = "1"
-  } if(newData.order_status === 'Aborted' || newData.order_status === undefined ){
-  paymentStatus = 0;
-  OrderStatus = "0"
-}
- if(newData.order_status === 'Initiated'  ){
-  paymentStatus = 0;
-  OrderStatus = "0"
- }
+    } if (newData.order_status === 'Shipped') {
+      paymentStatus = 1;
+      OrderStatus = "1"
+    } if (newData.order_status === 'Aborted' || newData.order_status === undefined) {
+      paymentStatus = 0;
+      OrderStatus = "0"
+    }
+    if (newData.order_status === 'Initiated') {
+      paymentStatus = 0;
+      OrderStatus = "0"
+    }
 
-console.log(paymentStatus,OrderStatus,)
+    console.log(paymentStatus, OrderStatus,)
 
-      let updateFields = {
-        payment:paymentStatus,
-        status:OrderStatus,
-      };
-  
-      await orderModel.findOneAndUpdate(
-        { orderId: req.params.id }, // Find by orderId
-        updateFields,
-        { new: true } // To return the updated document
+    let updateFields = {
+      payment: paymentStatus,
+      status: OrderStatus,
+    };
+
+    await orderModel.findOneAndUpdate(
+      { orderId: req.params.id }, // Find by orderId
+      updateFields,
+      { new: true } // To return the updated document
     );
-  
 
-      res.status(200).json({
-        success: true,
-        message: 'Response received successfully',
-        data: newData, // Sending the JSON data back to the client
-        key: workingKey, 
 
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Response received successfully',
+      data: newData, // Sending the JSON data back to the client
+      key: workingKey,
+
+    });
 
 
   } catch (error) {
-      console.error('Decryption error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error occurred while processing the request',
-        error: error.message // Sending the error message back to the client
-      });
+    console.error('Decryption error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error occurred while processing the request',
+      error: error.message // Sending the error message back to the client
+    });
   }
 }
 
@@ -269,7 +270,7 @@ function constructObjectFromDataString(dataString) {
   const pairs = dataString.split('","').map(pair => pair.split('":"'));
   const dataObject = {};
   for (const [key, value] of pairs) {
-      dataObject[key] = value;
+    dataObject[key] = value;
   }
   return dataObject;
 }
@@ -919,7 +920,7 @@ export const updateUserAndCreateOrderController = async (req, res) => {
     shipping,
     status,
     totalAmount,
-    userId,verified
+    userId, verified
   } = req.body;
 
   try {
@@ -930,7 +931,7 @@ export const updateUserAndCreateOrderController = async (req, res) => {
     // Update user
     const user = await userModel.findByIdAndUpdate(
       id,
-      { username, email, pincode, address, state,verified },
+      { username, email, pincode, address, state, verified },
       { new: true }
     );
 
@@ -1003,11 +1004,11 @@ export const updateUserAndCreateOrderController = async (req, res) => {
 
 
     if (mode === 'COD') {
-    // Send order confirmation email
-    await sendOrderConfirmationEmail(email, username, userId, newOrder);
-    const norder_id = newOrder.orderId;
-   
-       // block
+      // Send order confirmation email
+      await sendOrderConfirmationEmail(email, username, userId, newOrder);
+      const norder_id = newOrder.orderId;
+
+      // block
       //  await sendOrderOTP(phone, norder_id);
 
       return res.status(201).json({
@@ -1079,9 +1080,9 @@ export const PaymentRequest = async (req, res) => {
 }
 
 export const PaymentResponse = async (req, res) => {
-  console.log('req.body.encResp',req.body.encResp);
+  console.log('req.body.encResp', req.body.encResp);
   const decryptdata = decrypt(req.body.encResp, process.env.WORKING_KEY);
-  console.log('decryptdata',decryptdata);
+  console.log('decryptdata', decryptdata);
 
   // Split the decrypted data into key-value pairs
   const keyValuePairs = decryptdata.split('&');
@@ -1103,51 +1104,51 @@ export const PaymentResponse = async (req, res) => {
 
   const order = await orderModel.findOne({ orderId }).populate('userId');
 
-  const ordertotal =  order.totalAmount;
+  const ordertotal = order.totalAmount;
 
-  
-  console.log('fetch data',data);
-  console.log('fetch amt',orderAmt);
-  console.log('order amt',ordertotal);
+
+  console.log('fetch data', data);
+  console.log('fetch amt', orderAmt);
+  console.log('order amt', ordertotal);
 
   if (!order) {
     console.log('order not found');
-  } else{
-   
-  
-  const user = order.userId[0]; // Assuming there's only one user associated with the order
-
-  // Accessing user ID, username, and email
-  const userId = user._id; // User ID
-  const username = user.username;
-  const email = user.email;
-  const phone = user.phone;
-
-  if (orderStatus === 'Success' && orderAmt === ordertotal) {   
+  } else {
 
 
-    // Update payment details
-    order.payment = 1;
-    order.status = '1';
-            // // Send order confirmation email
-            await sendOrderConfirmationEmail(email, username, userId, order);
-           
-          
-       // block
+    const user = order.userId[0]; // Assuming there's only one user associated with the order
+
+    // Accessing user ID, username, and email
+    const userId = user._id; // User ID
+    const username = user.username;
+    const email = user.email;
+    const phone = user.phone;
+
+    if (orderStatus === 'Success' && orderAmt === ordertotal) {
+
+
+      // Update payment details
+      order.payment = 1;
+      order.status = '1';
+      // // Send order confirmation email
+      await sendOrderConfirmationEmail(email, username, userId, order);
+
+
+      // block
       console.log(otp)
       //   await sendOrderOTP(phone, order._id);
-    
-  } else {
-    // Update payment details
-    order.payment = 0;
-    order.status = '0';
+
+    } else {
+      // Update payment details
+      order.payment = 0;
+      order.status = '0';
+
+    }
+
+    // Save the order details
+    await order.save();
 
   }
-
-  // Save the order details
-  await order.save();
-
-}
 
 
   if (orderStatus === 'Success') {
@@ -1434,9 +1435,68 @@ export const EmailVerify = async (req, res) => {
 }
 
 
+
+export const HomeSendEnquire = async (req, res) => {
+
+  const { fullname, email, phone, service, QTY } = req.body;
+
+
+  try {
+
+    // Save data to the database
+    const newEnquire = new enquireModel({
+      fullname,
+      email,
+      phone,
+      service,
+      QTY
+    });
+
+    await newEnquire.save();
+
+    // Configure nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      // SMTP configuration
+      host: process.env.MAIL_HOST, // Update with your SMTP host
+      port: process.env.MAIL_PORT, // Update with your SMTP port
+      secure: process.env.MAIL_ENCRYPTION, // Set to true if using SSL/TLS
+      auth: {
+        user: process.env.MAIL_USERNAME, // Update with your email address
+        pass: process.env.MAIL_PASSWORD,// Update with your email password
+      }
+    });
+
+    // Email message
+    const mailOptions = {
+      from: process.env.MAIL_FROM_ADDRESS, // Update with your email address
+      to: process.env.MAIL_TO_ADDRESS, // Update with your email address
+      subject: 'New Enquire Form Submission',
+      text: `Name: ${fullname}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nQTY:${QTY}`
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Failed to send email');
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(200).send('Email sent successfully');
+      }
+    });
+  } catch (error) {
+    console.error("Error in send data:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
 export const contactSendEnquire = async (req, res) => {
 
-  const { name, email,phone, message } = req.body;
+  const { name, email, phone, message } = req.body;
 
   // Configure nodemailer transporter
   const transporter = nodemailer.createTransport({
@@ -2568,8 +2628,8 @@ export const SignupLoginUser = async (req, res) => {
         });
       } else {
 
-       // Hash the OTP
-       const ecryptOTP = await bcrypt.hash(String(otp), 10);
+        // Hash the OTP
+        const ecryptOTP = await bcrypt.hash(String(otp), 10);
 
         if (existingUser.status === '0') {
           return res.status(400).json({
@@ -2578,10 +2638,10 @@ export const SignupLoginUser = async (req, res) => {
           });
         }
 
-       
-       // block
-      console.log(otp)
-      //  await sendLogOTP(phone, otp);
+
+        // block
+        console.log(otp)
+        //  await sendLogOTP(phone, otp);
 
         return res.status(201).json({
           success: true,
@@ -2594,7 +2654,7 @@ export const SignupLoginUser = async (req, res) => {
     } else {
       const ecryptOTP = await bcrypt.hash(String(otp), 10);
 
-       // block
+      // block
       console.log(otp)
       // await sendRegOTP(phone, otp);
       return res.status(200).json({
@@ -2625,7 +2685,7 @@ export const SignupNewUser = async (req, res) => {
     const otp = Math.floor(1000 + Math.random() * 9000);
     // // Send OTP via Phone
     // await sendOTP(phone, otp);
- 
+
     // Validation
     if (!phone) {
       return res.status(400).json({
@@ -2641,8 +2701,8 @@ export const SignupNewUser = async (req, res) => {
     await user.save();
 
 
-       // Hash the OTP
-   const ecryptOTP = await bcrypt.hash(String(otp), 10);
+    // Hash the OTP
+    const ecryptOTP = await bcrypt.hash(String(otp), 10);
 
     res.status(201).json({
       success: true,
@@ -2689,14 +2749,14 @@ export const LoginUserWithOTP = async (req, res) => {
 
     if (existingUser) {
 
-   // Hash the OTP
-   const ecryptOTP = await bcrypt.hash(String(otp), 10);
+      // Hash the OTP
+      const ecryptOTP = await bcrypt.hash(String(otp), 10);
 
- 
-       // block
+
+      // block
       console.log(otp)
       //   await sendLogOTP(phone, otp);
- 
+
       return res.status(201).json({
         success: true,
         message: 'User found',
@@ -2771,23 +2831,23 @@ export const LoginAndVerifyOTP = async (req, res) => {
 
   try {
     const { OTP, HASHOTP } = req.body;
-   
+
     const isMatch = await bcrypt.compare(OTP, HASHOTP);
 
-    if(isMatch){
+    if (isMatch) {
       return res.status(200).json({
         success: true
       });
-  
-    }else{
+
+    } else {
       return res.status(400).json({
         success: false,
         message: 'OTP Not Verified',
 
       });
-  
+
     }
- 
+
 
   } catch (error) {
     return res.status(500).send
@@ -2846,7 +2906,7 @@ export const AuthUserByID = async (req, res) => {
           message: 'login sucesssfully with password',
           existingUser: {
             _id: existingUser._id, username: existingUser.username, phone: existingUser.phone, email: existingUser.email,
-            address: existingUser.address, pincode: existingUser.pincode, state: existingUser.state,verified: existingUser.verified,
+            address: existingUser.address, pincode: existingUser.pincode, state: existingUser.state, verified: existingUser.verified,
           },
         });
 
