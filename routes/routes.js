@@ -150,14 +150,30 @@ router.post('/admin/import/allproducts/', importAllProAdmin);
 
 // Middleware function to check if the request is coming from an authorized domain
 function checkOrigin(req, res, next) {
-  const allowedOrigins = ['https://ynb.delhiexpert.com']; // Add your authorized domains here
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://localhost:443",
+    "http://localhost:3001",
+    "https://localhost:80",
+    "https://ynb.taxonomy.co.in", "https://ynbadmin.taxonomy.co.in",
+    "https://localhost:5559",
+  ]; // Add your authorized domains here
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader("Access-Control-Allow-Origin", origin);
     next();
   } else {
-    next();
-    // res.status(403).json({ error: 'Unauthorized domain' });
+    const secretKey = process.env.Authtoken;
+
+    const token = req.header("x-auth-token");
+
+    // Check if no token or token doesn't match
+    if (!token || token !== secretKey) {
+      res.status(403).json({ error: "Unauthorized domain" });
+    } else {
+      next();
+    }
   }
 }
 

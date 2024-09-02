@@ -14,6 +14,7 @@ import bodyParser from "body-parser";
 
 app.use(cors());
 
+
 // const allowedOrigins = ['https://cayroshop.com/', 'https://test.ccavenue.com', 'https://secure.ccavenue.com'];
 
 // // Configure CORS with the allowed origins
@@ -43,6 +44,32 @@ dotenv.config();
 // socket io
 
 const server = http.createServer(app);
+
+
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://lead.delhiexpert.com", "https://ynb.taxonomy.co.in", "https://ynbadmin.taxonomy.co.in"],
+    methods: ["GET", "POST"], // Allow only GET and POST methods
+  },
+}); // Create a new instance of Socket.io Server and pass the HTTP server to it
+
+// Socket.io events
+io.on("connection", (socket) => {
+  console.log("A user connected", socket.id);
+
+  // Example: Handle chat message event
+  socket.on("chat message", (msg) => {
+    console.log("message: " + msg);
+    // Broadcast the message to all connected clients
+    io.emit("chat message", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
+
+
 app.get('/', (req, res) => {
   res.send('You are not authorized for this action');
 });

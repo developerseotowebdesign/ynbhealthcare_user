@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const homeLayoutSchema = new mongoose.Schema(
     {
-        home_slider: {
-            type: Array,
-            default: {}
+        slider_img: {
+            type: String,
+            default: ""
         },
-        trending_product: {
+        home_slider: {
             type: Array,
             default: {}
         },
@@ -18,6 +18,31 @@ const homeLayoutSchema = new mongoose.Schema(
             type: Array,
             default: {}
         },
+        trending_highlights_carousal: {
+            type: Array,
+            default: {}
+        },
+
+        service_category_carousal: {
+            type: Array,
+            default: {}
+        },
+
+        service_category_Images: {
+            type: Array,
+            default: {}
+        },
+        service_logos: {
+            type: Array,
+            default: {}
+        },
+        service_banner_images: {
+            type: Array,
+            default: {}
+        },
+
+
+
         best_selling_laptop: {
             type: Array,
             default: {}
