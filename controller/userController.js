@@ -641,7 +641,7 @@ export const findchatController = async (req, res) => {
 export const UsergetAllCategories = async (req, res) => {
 
   try {
-    const categories = await categoryModel.find({ status: 'true' }, '_id title');
+    const categories = await categoryModel.find({ status: 'true' }, '_id title slug');
 
     if (!categories) {
       return res.status(200).send
@@ -1823,7 +1823,91 @@ export const GetAllCategoriesByParentIdController = async (req, res) => {
   }
 };
 
+export const GetAllCategoriesBySlugController = async (req, res) => {
+  try {
+    const { parentSlug } = req.params;
+    const { filter, price, page = 1, perPage = 2 } = req.query; // Extract filter, price, page, and perPage query parameters
 
+    // Check if parentId is undefined or null
+    if (!parentSlug) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid parent ID.",
+      });
+    }
+
+    // Call the recursive function to get all categories
+    const MainCat = await categoryModel
+      .findOne({ slug: parentSlug })
+      .select("title metaTitle metaDescription metaKeywords image description specifications")
+      .lean();
+
+    const parentId = MainCat._id;
+    console.log(parentId, parentSlug);
+
+    const categories = await getAllCategoriesByParentId(parentId);
+
+
+    const filters = { Category: parentId }; // Initialize filters with parent category filter
+
+    if (filter) {
+      // Parse the filter parameter
+      const filterParams = JSON.parse(filter);
+
+      // Iterate through each parameter in the filter
+      Object.keys(filterParams).forEach((param) => {
+        // Split parameter values by comma if present
+        const paramValues = filterParams[param].split(",");
+        const variationsKey = `variations.${param}.${param}`;
+
+        // Handle multiple values for the parameter
+        filters[variationsKey] = { $in: paramValues };
+      });
+    }
+
+    // Check if price parameter is provided and not blank
+    if (price && price.trim() !== "") {
+      const priceRanges = price.split(","); // Split multiple price ranges by comma
+      const priceFilters = priceRanges.map((range) => {
+        const [minPrice, maxPrice] = range.split("-"); // Split each range into min and max prices
+        return { salePrice: { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) } };
+      });
+
+      // Add price filters to the existing filters
+      filters.$or = priceFilters;
+    }
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * perPage;
+
+    // Fetch products based on filters with pagination
+    const products = await productModel
+      .find(filters)
+      .select("_id title regularPrice salePrice pImage variations")
+      .skip(skip)
+      .limit(perPage)
+      .lean();
+
+    const Procat = { Category: parentId }; // Initialize filters with parent category filter
+    const productsFilter = await productModel.find(Procat).select("_id regularPrice salePrice variations").lean();
+
+    const proLength = products.length;
+    return res.status(200).json({
+      success: true,
+      categories,
+      MainCat,
+      products,
+      proLength,
+      productsFilter,
+    });
+  } catch (error) {
+    console.error("Error in GetAllCategoriesByParentIdController:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 export const getAllCategoriesByParentId = async (parentId) => {
   try {

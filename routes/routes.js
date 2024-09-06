@@ -8,7 +8,7 @@ import {
 import {
   AddCart, contactEnquire, razorpayCallback, UpdateCart, getCart, userTokenController, userBlogsController, Userlogin, SignupUser, getAllBlogsController, createBlogController,
   LoginAndVerifyOTP, updateBlogController, deleteBlogController, getBlogIdController, CreateChatController, findUserschatController, findchatController
-  , EmailVerify, postman, PaymentResponse, PaymentRequest, getProductsByFilterUser, cancelOrderUser, ViewAllZones, getProductsByHSN, AuthUserByID, updateProfileUser, SignupNewUser, LoginUserWithOTP, LoginUserWithPass, SendOTP, SignupLoginUser, getTaxIdUser, ViewAllUserTaxes, ViewCompareByUser, applyPromoCode, getHomeLayoutData, AddWishListByUser, deleteCompareByUser, deleteWishListByUser, ViewWishListByUser, AddCompareByUser, ViewProductRating, ViewCategoryRating, AddRating, UsergetAllCategories, UsergetAllProducts, UsergetAllHomeProducts, userOrdersViewController, getAllAttributeUser, getProductIdUser, updateUserController, createOrderController, updateUserAndCreateOrderController, userOrdersController, getHomeData, GetAllCategoriesByParentIdController
+  , EmailVerify, postman, PaymentResponse, PaymentRequest, getProductsByFilterUser, cancelOrderUser, ViewAllZones, getProductsByHSN, AuthUserByID, updateProfileUser, SignupNewUser, LoginUserWithOTP, LoginUserWithPass, SendOTP, SignupLoginUser, getTaxIdUser, ViewAllUserTaxes, ViewCompareByUser, applyPromoCode, getHomeLayoutData, AddWishListByUser, deleteCompareByUser, deleteWishListByUser, ViewWishListByUser, AddCompareByUser, ViewProductRating, ViewCategoryRating, AddRating, UsergetAllCategories, UsergetAllProducts, UsergetAllHomeProducts, userOrdersViewController, getAllAttributeUser, getProductIdUser, updateUserController, createOrderController, updateUserAndCreateOrderController, userOrdersController, getHomeData, GetAllCategoriesByParentIdController, GetAllCategoriesBySlugController
   , HomeSendEnquire
 } from "../controller/userController.js"
 import authenticateToken from "../middleware/authMiddleware.js";
@@ -34,6 +34,8 @@ router.delete('/admin/delete-blog/:id', AdmindeleteBlogController);
 
 router.post('/admin/add-category', AddAdminCategoryController);
 router.get('/all/category/:parentId', GetAllCategoriesByParentIdController);
+router.get('/all/category-slug/:parentSlug', GetAllCategoriesBySlugController);
+
 router.get('/all-category', UsergetAllCategories);
 router.get('/all-products', UsergetAllProducts);
 router.get('/all-home-products', UsergetAllHomeProducts);

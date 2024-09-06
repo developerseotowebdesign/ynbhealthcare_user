@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const homeLayoutSchema = new mongoose.Schema(
     {
+
+        top_bar: {
+            type: String,
+            default: ""
+        },
         slider_img: {
             type: String,
             default: ""

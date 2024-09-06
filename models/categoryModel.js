@@ -35,6 +35,12 @@ const categorySchema = new mongoose.Schema(
             type: String,
             default: "true"
         },
+        specifications: {
+            type: Object,
+            default: {
+                specifications: [],
+            },
+        },
         parent: {
             type: mongoose.Types.ObjectId,
             ref: "category", // Reference to the same "Category" model

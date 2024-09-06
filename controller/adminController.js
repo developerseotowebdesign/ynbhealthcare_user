@@ -512,6 +512,7 @@ export const AddAdminCategoryController = async (req, res) => {
       status,
       slide_head,
       slide_para,
+      specifications
     } = req.body;
 
     // Validation
@@ -535,6 +536,7 @@ export const AddAdminCategoryController = async (req, res) => {
       metaKeywords,
       parent,
       status,
+      specifications
     });
     await newCategory.save();
 
@@ -793,7 +795,7 @@ export const updateCategoryAdmin = async (req, res) => {
       metaDescription,
       metaKeywords,
       parent,
-      status,
+      status, specifications
     } = req.body;
 
     let updateFields = {
@@ -807,7 +809,7 @@ export const updateCategoryAdmin = async (req, res) => {
       metaDescription,
       metaKeywords,
       parent,
-      status,
+      status, specifications
     };
 
     const Category = await categoryModel.findByIdAndUpdate(id, updateFields, {
@@ -1588,7 +1590,7 @@ export const editHomeLayoutData = async (req, res) => {
       service_category_carousal,
       service_category_Images,
       service_logos,
-      service_banner_images, slider_img,
+      service_banner_images, slider_img, top_bar,
       trending_product_carousal,
       best_selling_laptop,
       collection_heading,
@@ -1602,6 +1604,7 @@ export const editHomeLayoutData = async (req, res) => {
       recommended_products
     } = req.body;
 
+    console.log('top_bar', top_bar)
     let updateFields = {
       home_slider,
       trending_product,
@@ -1610,7 +1613,7 @@ export const editHomeLayoutData = async (req, res) => {
       service_category_carousal,
       service_category_Images,
       service_logos,
-      service_banner_images, slider_img,
+      service_banner_images, slider_img, top_bar,
       trending_product_carousal,
       best_selling_laptop,
       collection_heading,
